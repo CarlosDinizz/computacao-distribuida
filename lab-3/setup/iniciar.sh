@@ -18,10 +18,10 @@ for node in $NODES; do
 done
 
 # 3. Transferência do código-fonte e do hostfile para todos os nós
-for node in $NODES; do
-    docker cp ../programa.py "$node:/home/mpiuser/"
-    docker cp hosts "$node:/home/mpiuser/"
-done
+# for node in $NODES; do
+#     docker cp ../programa.py "$node:/home/mpiuser/"
+#     docker cp hosts "$node:/home/mpiuser/"
+# done
 
 # 4. Configuração do SSH sem senha entre os nós
 docker compose exec -u mpiuser master bash -c \
@@ -45,9 +45,3 @@ rm -f id_rsa.pub
 for node in $NODES; do
     docker compose exec "$node" chown -R mpiuser:mpiuser /home/mpiuser
 done
-
-# 6. Execução do programa MPI a partir do host
-docker compose exec master su - mpiuser -c \
-    "mpirun --hostfile hosts -np 4 \
-     --mca plm_rsh_args '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' \
-     python3 programa.py"
