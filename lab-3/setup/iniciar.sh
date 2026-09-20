@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+
+
 NODES="master worker1 worker2 worker3"
 
 # 1. Inicialização dos containers e serviço SSH
