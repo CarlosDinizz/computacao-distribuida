@@ -18,7 +18,7 @@ NODES="master worker1 worker2 worker3"
 
 for node in $NODES; do
     # Copia os arquivos diretamente da pasta atual (setup)
-    docker cp ../programa.py "$node:/home/mpiuser/"
+    docker cp ../ex2.py "$node:/home/mpiuser/"
     docker cp hosts "$node:/home/mpiuser/"
     
     # Ajusta as permissões dentro do container
@@ -32,4 +32,4 @@ echo \
 docker compose exec master su - mpiuser -c \
     "mpirun --hostfile hosts -np 4 \
      --mca plm_rsh_args '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' \
-     python3 programa.py"
+     python3 ex2.py"
