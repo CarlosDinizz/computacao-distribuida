@@ -37,3 +37,4 @@ if rank == 0:
     print(f"Pontos dentro do circulo: {dentro_total}")
     print(f"PI aproximado          : {pi_estimado:.6f}")
     print(f"Tempo distribuido MPI  : {tempo_ms:.2f} ms")
+    sys.stdout.flush()
