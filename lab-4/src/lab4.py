@@ -17,6 +17,7 @@ PCT_CRITICO = 5.0 # percentual em %
 
 imagem_completa = None
 parametros = None
+
 t_inicio = time.time()
 
 # Etapa 2 & 3: Processo 0 gera radiografia e define configurações
@@ -24,6 +25,7 @@ if rank == 0:
     print(f"[Master] Inicializando análise com {size} processos MPI...")
     # Geração simulada da radiografia
     imagem_completa = np.random.randint(30, 90, size=(LINHAS, COLUNAS), dtype=np.uint8)
+    
     # Injeção de foco suspeito artificial no pulmão direito
     imagem_completa[600:900, 1200:1600] = np.random.randint(180, 245, size=(300, 400), dtype=np.uint8)
     parametros = {'linhas': LINHAS,
@@ -42,12 +44,12 @@ comm.Barrier()
 # Etapa 5: Divisão e distribuição da imagem via Scatter
 linhas_por_proc = parametros['linhas'] // size
 bloco_local = np.empty((linhas_por_proc, parametros['colunas']), dtype=np.uint8)
-blocos_divididos = None
 
+blocos_divididos = None
 if rank == 0:
     try:
         blocos_divididos = np.split(imagem_completa, size, axis=0)
-    except: # caso os blocos não possam ser dividos igualmente a imagem completa adiciona linhas nulas como padding
+    except:
         i = 1
         while i < LINHAS:
             i = i * size
@@ -59,7 +61,6 @@ if rank == 0:
 bloco_local = comm.scatter(blocos_divididos, root=0)
 
 # Etapa 6 & 7: Processamento e classificação local
-# TODO: Implementar a contagem de pixels, suspeitos, suspeitos_esq, suspeitos_dir
 total_local = bloco_local.size
 soma_local = int(np.sum(bloco_local))
 max_local = int(np.max(bloco_local))
