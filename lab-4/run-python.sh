@@ -9,4 +9,4 @@ docker cp ./src/lab4.py worker2:/home/mpiuser/
 docker cp ./src/lab4.py worker3:/home/mpiuser/
 
 # 4. Execução do programa MPI a partir do host (Codespaces)
-docker compose exec master su - mpiuser -c "mpirun --hostfile hosts -np 4 python3 lab4.py"
+docker compose exec master su - mpiuser -c "mpirun --hostfile hosts -np 3 python3 lab4.py"
