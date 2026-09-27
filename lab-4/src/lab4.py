@@ -9,8 +9,8 @@ rank = comm.Get_rank()
 size = comm.Get_size()
 
 # Parâmetros padrão de teste
-LINHAS = 4002
-COLUNAS = 4002
+LINHAS = 2000
+COLUNAS = 2000
 LIMIAR_SUSPEITO = 200
 LIMIAR_ALTO = 230
 PCT_CRITICO = 5.0 # percentual em %
