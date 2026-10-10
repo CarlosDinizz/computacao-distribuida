@@ -44,6 +44,43 @@ app.get('/api/full-info/:id', async (req, res) => {
     res.json(nodeResponse);
 })
 
+app.post('/api/cadastrar', async (req, res) => {
+    try {
+        const { id, nome, estoque, preco_base, categoria } = req.body;
+        
+        const payload = {
+            id: id,
+            preco_base,
+            categoria: categoria
+        }
+
+        const response = await fetch(`${FLASK_URL}/fiscal/cadastrar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.status === 201) {
+            const dados = await response.json();
+            
+            produtos_estoque[id] = {
+                nome: `${String(nome).toUpperCase()}`,
+                estoque: estoque
+            };
+            
+            return res.status(201).json({message: "Cadastro com sucesso!"});
+        }
+
+        return res.status(400).json({message: 'Não foi possível cadastrar o produto'});
+
+    } catch (error) {
+        return res.status(500).json({erro: "Erro no flask"})
+    }
+})
+
+
 app.listen(PORT, () => {
     console.log(`Servidor Node rodando na porta ${PORT}`);
 });
