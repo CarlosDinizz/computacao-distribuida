@@ -1,9 +1,8 @@
 
 const express = require('express');
-
 const app = express();
-
 const PORT = 3000;
+const FLASK_URL = "http://localhost:5000"
 
 app.use(express.json());
 
@@ -27,11 +26,22 @@ app.get('/api/data', (req, res) => {
     });
 });
 
-app.get('/api/data/:id', (req, res) => {
+app.get('/api/data/produtos_estoque/:id', (req, res) => {
     const id = req.params.id
     const dado_encontrado = produtos_estoque[id];
     console.log(dado_encontrado)
     res.json(dado_encontrado);
+})
+
+app.get('/api/full-info/:id', async (req, res) => {
+    const id = req.params.id;
+    const response = await fetch(`${FLASK_URL}/detalhes/${id}`, { method: 'get' });
+    const flaskResponse = await response.json();
+    const nodeResponse = {
+        nome: produtos_estoque[id].nome,
+        preco: flaskResponse["preco"],
+    }
+    res.json(nodeResponse);
 })
 
 app.listen(PORT, () => {

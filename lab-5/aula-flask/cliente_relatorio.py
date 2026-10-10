@@ -16,13 +16,11 @@ def consumir_api(nome, url, id):
 
 if __name__ == "__main__":
     id = int(input("Digite um id entre 1 e 2: "))
-    response_produtos_estoque = consumir_api("Node", url_node, id)
-    response_produtos_fiscais = consumir_api("Flask", url_flask, id)
+    response_produtos_estoque = consumir_api("Node", f"{url_node}/produtos_estoque", id)
+    response_produtos_fiscais = consumir_api("Flask", f"{url_flask}/produtos_fiscais", id)
     
     dados_estoque = response_produtos_estoque.json()
     dados_fiscais = response_produtos_fiscais.json()
-    print(f"Estoque: {dados_estoque}")
-    print(f"Fiscais: {dados_fiscais}")
     
     dados = {
         "id": id,

@@ -11,8 +11,13 @@ def get_data():
     "tecnologia": "Python"
     })
 
-@app.route('/api/data/<string:id>', methods=["GET"])
+@app.route('/api/data/produtos_fiscais/<string:id>', methods=["GET"])
 def get_produtos_fiscais(id):
+    print(produtos_fiscais[id])
+    return jsonify((produtos_fiscais[id]))
+
+@app.route('/detalhes/<string:id>', methods=["GET"])
+def get_detalhes(id):
     print(produtos_fiscais[id])
     return jsonify((produtos_fiscais[id]))
     
