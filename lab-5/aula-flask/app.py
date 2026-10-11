@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+import datetime
 app = Flask(__name__)
 
 produtos_fiscais = { "1": { "preco": 2500.0, "categoria": "Laptops" }, "2": {"preco": 1200.0, "categoria": "Monitores"} }
@@ -20,6 +21,17 @@ def get_produtos_fiscais(id):
 def get_detalhes(id):
     print(produtos_fiscais[id])
     return jsonify((produtos_fiscais[id]))
+
+@app.route('/status', methods=["GET"])
+def get_status():
+    status = {
+        "service": "flask",
+        "status": 'online',
+        "timestamp": str(datetime.datetime.now())
+    }
+    return jsonify(status), 200
+
+
 
 @app.route('/fiscal/cadastrar', methods=["POST"])
 def post_cadastrar():

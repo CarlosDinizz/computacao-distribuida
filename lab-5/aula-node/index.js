@@ -80,6 +80,20 @@ app.post('/api/cadastrar', async (req, res) => {
     }
 })
 
+app.get('/status', (req, res) => {
+    try {
+        
+        const response = {
+            service: 'node',
+            status: 'online',
+            timestamp: new Date().toISOString()
+        };
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(500).json({message: 'Erro no servidor'})
+    }
+})
+
 
 app.listen(PORT, () => {
     console.log(`Servidor Node rodando na porta ${PORT}`);
