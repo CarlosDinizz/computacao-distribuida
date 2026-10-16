@@ -1,0 +1,1 @@
+# Estrutura de logs de auditoria
