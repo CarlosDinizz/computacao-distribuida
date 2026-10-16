@@ -1,4 +1,3 @@
-
 const express = require('express');
 const app = express();
 const PORT = 3000;
@@ -18,6 +17,30 @@ const produtos_estoque = {
         }
     }
 
+const ERRO_ID_INVALIDO = {
+    error: "INVALID_ID",
+    message: "O ID deve ser um inteiro positivo"
+};
+
+function idValido(valor) {
+    return /^[0-9]+$/.test(String(valor)) && Number(valor) > 0;
+}
+
+function erroNaoEncontrado(res, id) {
+    return res.status(404).json({
+        error: "NOT_FOUND",
+        message: `Produto com ID ${id} não encontrado`
+    });
+}
+
+app.param('id', (req, res, next, id) => {
+    if (!idValido(id)) {
+        return res.status(400).json(ERRO_ID_INVALIDO);
+    }
+    req.params.id = String(Number(id));
+    next();
+});
+
 app.get('/api/data', (req, res) => {
     res.json({
         "mensagem": "Olá do Node.js!",
@@ -29,25 +52,49 @@ app.get('/api/data', (req, res) => {
 app.get('/api/data/produtos_estoque/:id', (req, res) => {
     const id = req.params.id
     const dado_encontrado = produtos_estoque[id];
-    console.log(dado_encontrado)
+    if (!dado_encontrado) return erroNaoEncontrado(res, id);
     res.json(dado_encontrado);
+})
+
+app.get('/estoque/:id', (req, res) => {
+    const id = req.params.id;
+    const produto = produtos_estoque[id];
+    if (!produto) return erroNaoEncontrado(res, id);
+    res.json({ id, ...produto });
 })
 
 app.get('/api/full-info/:id', async (req, res) => {
     const id = req.params.id;
-    const response = await fetch(`${FLASK_URL}/detalhes/${id}`, { method: 'get' });
-    const flaskResponse = await response.json();
-    const nodeResponse = {
-        nome: produtos_estoque[id].nome,
-        preco: flaskResponse["preco"],
+    try {
+        const response = await fetch(`${FLASK_URL}/detalhes/${id}`, { method: 'get' });
+        const flaskResponse = await response.json();
+
+        if (!response.ok) {
+            return res.status(response.status).json(flaskResponse);
+        }
+        if (!produtos_estoque[id]) return erroNaoEncontrado(res, id);
+
+        const nodeResponse = {
+            nome: produtos_estoque[id].nome,
+            preco: flaskResponse["preco"],
+        }
+        res.json(nodeResponse);
+    } catch (error) {
+        return res.status(502).json({
+            error: "FLASK_UNAVAILABLE",
+            message: "Não foi possível consultar o servidor Flask"
+        });
     }
-    res.json(nodeResponse);
 })
 
 app.post('/api/cadastrar', async (req, res) => {
     try {
-        const { id, nome, estoque, preco_base, categoria } = req.body;
-        
+        const { id, nome, estoque, preco_base, categoria } = req.body ?? {};
+
+        if (!idValido(id)) {
+            return res.status(400).json(ERRO_ID_INVALIDO);
+        }
+
         const payload = {
             id: id,
             preco_base,
@@ -93,7 +140,6 @@ app.get('/status', (req, res) => {
         return res.status(500).json({message: 'Erro no servidor'})
     }
 })
-
 
 app.listen(PORT, () => {
     console.log(`Servidor Node rodando na porta ${PORT}`);
